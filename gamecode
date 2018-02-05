@@ -1,0 +1,905 @@
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <string>
+#include <time.h>
+#include <stdio.h>
+#include <conio.h>
+#include <windows.h>
+
+using namespace std;
+
+int main();
+int tictactoe();
+int rockpaperscissors();
+int mastermind();
+int hangman();
+int star();
+int fillLetter(char, string, string&);
+char turn;
+char board[3][3] = { { '1', '2', '3' }, { '4', '5', '6' }, { '7', '8', '9' } };
+char gamechoice = 'A' || 'B' || 'C' || 'D' || 'E' || 'F';
+bool draw = false;
+void pattern1(int rownum, int row, int col);
+void pattern2(int rownum, int row, int col);
+void pattern3(int rownum, int row, int col, int space);
+void pattern4(int rownum, int row, int col, int space);
+void show_board();
+void oneplayer_turn();
+void twoplayer_turn();
+bool winner();
+void getData(int guess[5]);
+void rannum(int randomn[5]);
+void check(int guess[5], int randomn[5], int &correctnum, int &correctloc);
+
+int menu() {
+	char gamechoice;
+	do{
+		cout << endl << "----------------------" << endl
+			<< "Choose a game to play!" << endl
+			<< "Choices are case sensitive" << endl
+			<< "Type # to return to this menu at any point" << endl << endl
+			<< "A. Tic Tac Toe" << endl
+			<< "B. Hangman" << endl
+			<< "C. Mastermind" << endl
+			<< "D. Rock Paper Scissors" << endl
+			<< "E. Star Patterns" << endl
+			<< "F. Quit Program" << endl
+			<< "Please choose an option: ";
+		cin >> gamechoice;
+	} while ((gamechoice != 'A') && (gamechoice != 'B') && (gamechoice != 'C') && (gamechoice != 'D') && (gamechoice != 'E') && (gamechoice != 'F'));
+	if ((gamechoice < 'A') || (gamechoice > 'F'))
+	{
+		menu();
+	}
+	if (gamechoice == 'A')
+	{
+		tictactoe();
+	}
+	else if (gamechoice == 'B')
+	{
+		hangman();
+	}
+	else if (gamechoice == 'C')
+	{
+		mastermind();
+	}
+	else if (gamechoice == 'D')
+	{
+		rockpaperscissors();
+	}
+	else if (gamechoice == 'E')
+	{
+		star();
+	}
+	else if (gamechoice == 'F') {
+		cout << "Thanks for playing!";
+		return 0;
+	}
+
+}
+
+int tictactoe()
+{
+	char players = 'A' || 'B' || '#';
+	char playagain = 'Y' || 'N' || '#';
+	
+
+	cout << endl << endl << endl << "Tic Tac Toe" << endl << endl 
+		<< "How To Play: Take turns placing your marks (either X or O) on a space in the grid (numbered 1-9)." << endl <<
+		"The first player to mark three consecutive spaces horizontally, vertically, or diagonally wins the game." << endl;
+	do{
+		board[0][0] = '1';
+		board[0][1] = '2';
+		board[0][2] = '3';
+
+		board[1][0] = '4';
+		board[1][1] = '5';
+		board[1][2] = '6';
+
+		board[2][0] = '7';
+		board[2][1] = '8';
+		board[2][2] = '9';
+		do {
+			cout << endl << "Would you like to play with 1 Player or with 2 Players?" << endl
+				<< "A. 1 Player" << endl
+				<< "B. 2 Players" << endl
+				<< "Please choose an option: ";
+			cin >> players;
+			cout << endl;
+		} while ((players != 'B') && (players != 'A') && (players != '#'));
+		if (players == '#'){
+			menu();
+		}
+		else if (players == 'A')
+		{
+			cout << "Player 1 [X]   The Computer [O]\n";
+			turn = 'X';
+
+			while (!winner())
+			{
+				show_board();
+				oneplayer_turn();
+				winner();
+			}
+
+			if (turn == 'O' && !draw)
+			{
+				show_board();
+				cout << endl << endl << "Player 1 [X] Wins!" << endl;
+			}
+			else if (turn == 'X' && !draw)
+			{
+				show_board();
+				cout << endl << endl << "The Computer [O] Wins! Game Over!\n";
+			}
+			else
+			{
+				show_board();
+				cout << endl << endl << "It's a draw! Game Over!\n";
+			}
+		}
+		else if (players == 'B')
+		{
+			cout << "Player 1 [X]    Player 2 [O]\n";
+			turn = 'X';
+
+			while (!winner())
+			{
+				show_board();
+				twoplayer_turn();
+				winner();
+			}
+
+			if (turn == 'O' && !draw)
+			{
+				show_board();
+				cout << endl << endl << "Player 1 [X] Wins! Game Over!\n";
+			}
+			else if (turn == 'X' && !draw)
+			{
+				show_board();
+				cout << endl << endl << "Player 2 [O] Wins! Game Over!\n";
+			}
+			else
+			{
+				show_board();
+				cout << endl << endl << "It's a draw! Game Over!\n";
+			}
+		}
+		do{
+			cout << "Would you like to play again? (Y/N) ";
+			cin >> playagain;
+		} while ((playagain != 'Y') && (playagain != 'N') && (playagain != '#'));
+	} while (playagain == 'Y');
+	system("pause");
+	menu();
+	return (0);
+}
+
+void show_board()
+{
+	system("cls");
+	cout << "---------------------" << endl << endl;
+	cout << "     |     |     " << endl;
+	cout << "  " << board[0][0] << "  |  " << board[0][1] << "  |  " << board[0][2] << endl;
+	cout << "_____|_____|_____" << endl;
+	cout << "     |     |     " << endl;
+	cout << "  " << board[1][0] << "  |  " << board[1][1] << "  |  " << board[1][2] << endl;
+	cout << "_____|_____|_____" << endl;
+	cout << "     |     |     " << endl;
+	cout << "  " << board[2][0] << "  |  " << board[2][1] << "  |  " << board[2][2] << endl;
+	cout << "     |     |     " << endl;
+}
+
+void oneplayer_turn()
+{
+	int choice;
+	int row = 0, column = 0;
+	if (turn == 'X')
+	{
+		cout << "Player 1 turn [X]: ";
+		cin >> choice;
+		switch (choice)
+		{
+		case 1: row = 0; column = 0; break;
+		case 2: row = 0; column = 1; break;
+		case 3: row = 0; column = 2; break;
+		case 4: row = 1; column = 0; break;
+		case 5: row = 1; column = 1; break;
+		case 6: row = 1; column = 2; break;
+		case 7: row = 2; column = 0; break;
+		case 8: row = 2; column = 1; break;
+		case 9: row = 2; column = 2; break;
+	
+		default:
+			cout << "You didn't enter a correct number! Try again\n";
+			oneplayer_turn();
+		}
+
+		if (turn == 'X' && board[row][column] != 'X' && board[row][column] != 'O')
+		{
+			board[row][column] = 'X';
+			turn = 'O';
+		}
+		else
+		{
+			cout << "The cell you chose is used! Try again\n";
+			oneplayer_turn();
+		}
+	}
+	else if (turn == 'O')
+	{
+		choice = rand() % 9;
+		switch (choice)
+		{
+		case 0: row = 0; column = 0; break;
+		case 1: row = 0; column = 1; break;
+		case 2: row = 0; column = 2; break;
+		case 3: row = 1; column = 0; break;
+		case 4: row = 1; column = 1; break;
+		case 5: row = 1; column = 2; break;
+		case 6: row = 2; column = 0; break;
+		case 7: row = 2; column = 1; break;
+		case 8: row = 2; column = 2; break;
+		}
+
+		if (turn == 'O' && board[row][column] != 'X' && board[row][column] != 'O')
+		{
+			cout << "The Computer's turn [O]" << endl;
+			board[row][column] = 'O';
+			turn = 'X';
+		}
+		else //used cell
+		{
+			oneplayer_turn();
+		}
+
+	}
+}
+
+void twoplayer_turn()
+{
+	
+	int choice;
+	int row = 0, column = 0;
+
+	if (turn == 'X')
+	{
+		cout << "Player 1 turn [X]: ";
+	}
+	else if (turn == 'O')
+	{
+		cout << "Player 2 turn [O]: ";
+	}
+	cin >> choice;
+	switch (choice)
+	{
+	case 1: row = 0; column = 0; break;
+	case 2: row = 0; column = 1; break;
+	case 3: row = 0; column = 2; break;
+	case 4: row = 1; column = 0; break;
+	case 5: row = 1; column = 1; break;
+	case 6: row = 1; column = 2; break;
+	case 7: row = 2; column = 0; break;
+	case 8: row = 2; column = 1; break;
+	case 9: row = 2; column = 2; break;
+	default:
+		cout << "You didn't enter a correct number! Try again\n";
+		twoplayer_turn();
+	}
+
+	if (turn == 'X' && board[row][column] != 'X' && board[row][column] != 'O')
+	{
+		board[row][column] = 'X';
+		turn = 'O';
+	}
+	else if (turn == 'O' && board[row][column] != 'X' && board[row][column] != 'O')
+	{
+		board[row][column] = 'O';
+		turn = 'X';
+	}
+	else
+	{
+		cout << "The cell you chose is used! Try again\n";
+		twoplayer_turn();
+	}
+
+}
+
+bool winner()
+{
+	for (int i = 0; i < 3; i++)//Win
+	{
+		if ((board[i][0] == board[i][1] && board[i][1] == board[i][2]) || (board[0][i] == board[1][i] && board[1][i] == board[2][i]) || (board[0][0] == board[1][1] && board[1][1] == board[2][2]) || (board[0][2] == board[1][1] && board[1][1] == board[2][0]))
+		{
+			return true;
+		}
+	}
+
+	for (int i = 0; i < 3; i++)//Tie
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			if (board[i][j] != 'X' && board[i][j] != 'O')
+			{
+				return false;
+			}
+		}
+	}
+	draw = true;
+	return true;
+}
+
+int hangman()
+{
+	string name;
+	int maximum = 6;
+	char letter;
+	char AorB = 'A' || 'B' || '#';
+	//int wrong_guesses = 0;
+	string word;
+	char playagain = 'Y' || 'N' || '#';
+	cout << endl << endl << endl << "Hangman" << endl << endl
+		<< "How To Play: The Computer or other player will choose a word." << endl <<
+		"Each letter of the word will be represented by a line." << endl <<
+		"You must try to guess the word by entering one letter each turn." << endl <<
+		"If you guess six letters wrong, you lose." << endl;
+		
+
+	do{
+		
+		int wrong_guesses = 0;
+		do {
+			cout << endl << "Would you like to play with 1 Player or with 2 Players?" << endl
+				<< "A. 1 Player" << endl
+				<< "B. 2 Players" << endl
+				<< "Please choose an option: ";
+			cin >> AorB;
+			cout << endl;
+		} while ((AorB != 'B') && (AorB != 'A') && (AorB != '#'));
+		if (AorB == '#')
+		{
+			menu();
+		}
+		else if (AorB == 'A')
+		{
+			cout << "The Computer's word is related to Computer Science or Wentworth.";
+			string words[] =
+			{
+				"wentworth",
+				"leopard",
+				"code",
+				"programming",
+				"technology",
+				"integer",
+				"void",
+				"innovation",
+				"boolean",
+				"data",
+				"output",
+				"input",
+				"functions",
+				"computer",
+				"strings",
+				"operator",
+				"switch",
+				"compiler",
+				"debug",
+				"variable",
+				"bit",
+				"byte",
+				"double"
+			};
+			srand(time(NULL));
+			int x = rand();
+			if (x < 0) {
+				x = -x;
+			}
+			int n = x % 23;
+			word = words[n];
+		}
+		else if (AorB == 'B')
+		{
+			cout << "Please play this game in a small window" << endl <<
+				"Player 1, enter a word for Player 2 to guess: ";
+			cin >> word;
+				cout << endl << endl << endl << endl << endl << endl << endl << endl << endl << endl << endl << endl << endl << endl << endl << endl << endl << endl << endl << endl << endl << endl << endl << endl;
+			}
+			string unknownword(word.length(), '-');
+			while (wrong_guesses < maximum)
+			{
+				cout << "\n\n" << unknownword << endl;
+				cout << "Guess a letter: ";
+				cin >> letter;
+				if (letter == '#')
+				{
+					menu();
+				}
+				if (fillLetter(letter, word, unknownword) == 0)
+				{
+					cout << endl << "That letter was incorrect" << endl;
+					wrong_guesses++;
+				}
+				else
+				{
+					cout << endl << "That letter was correct!" << endl;
+				}
+				system("cls");
+				if (wrong_guesses == 0)
+				{
+					cout << " ___" << endl;
+					cout << "|  " << endl;
+					cout << "|  " << endl;
+					cout << "| " << endl;
+				}
+				else if (wrong_guesses == 1)
+				{
+					cout << " ___" << endl;
+					cout << "|  O" << endl;
+					cout << "|  " << endl;
+					cout << "| " << endl;
+				}
+				else if (wrong_guesses == 2)
+				{
+					cout << " ___" << endl;
+					cout << "|  O" << endl;
+					cout << "|  | " << endl;
+					cout << "|  " << endl;
+				}
+				else if (wrong_guesses == 3)
+				{
+					cout << " ___" << endl;
+					cout << "|  O" << endl;
+					cout << "| /| " << endl;
+					cout << "| " << endl;
+				}
+				else if (wrong_guesses == 4)
+				{
+					cout << " ___" << endl;
+					cout << "|  O" << endl;
+					cout << "| /|\\ " << endl;
+					cout << "| " << endl;
+				}
+				else if (wrong_guesses == 5)
+				{
+					cout << " ___" << endl;
+					cout << "|  O" << endl;
+					cout << "| /|\\ " << endl;
+					cout << "| /" << endl;
+				}
+				else if (wrong_guesses == 6)
+				{
+					cout << " ___" << endl;
+					cout << "|  O" << endl;
+					cout << "| /|\\ " << endl;
+					cout << "| / \\" << endl;
+				}
+				if (word == unknownword)
+				{
+					cout << word << endl;
+					cout << endl << "You Win!" << endl;
+					cout << "Thank you for playing!";
+					break;
+				}
+			}
+			if (wrong_guesses == maximum)
+			{
+				cout << endl << "You Lose" << endl;
+				cout << "The word was: " << word << endl;
+			}
+			do{
+				cout << endl << "Would you like to play again? (Y/N) ";
+				cin >> playagain;
+			} while ((playagain != 'Y') && (playagain != 'N') && (playagain != '#'));
+		} while (playagain == 'Y');
+		system("pause");
+		menu();
+		return (0);
+}
+
+int fillLetter(char guessed, string unknown, string &guessedword)
+{
+	int i;
+	int same = 0;
+	int len = unknown.length();
+	for (i = 0; i< len; i++)
+	{
+		if (guessed == guessedword[i])
+			return 0;
+		if (guessed == unknown[i])
+		{
+			guessedword[i] = guessed;
+			same++;
+		}
+	}
+	return same;
+}
+
+int mastermind()
+{
+	int correctnum, correctloc;
+	cout << endl << endl << endl << "Mastermind" << endl << endl <<
+		"How To Play: The Computer will choose 4 random numbers between 1 and 10." << endl <<
+		"You will guess what the numbers are, and the Computer will tell you how many of your numbers are correct with an incorrect location or correct with a correct location" << endl <<
+		"Once you guess the 4 numbers in the correct order, you win." << endl << endl;
+	
+	int randomn[5];
+	char playagain = 'Y' || 'N' || '#';
+	do{
+
+		rannum(randomn);
+
+		do
+		{
+			int guess[5];
+			getData(guess);
+			check(guess, randomn, correctnum, correctloc);
+			if (correctloc != 4)
+			{
+				cout << "You have " << correctnum << " correct numbers with incorrect location and " << correctloc << " correct numbers with correct location." << endl;
+			}
+		} while (correctloc != 4);
+
+		cout << "Correct, you win!";
+	do{
+		cout << endl << "Would you like to play again? (Y/N) ";
+		cin >> playagain;
+	} while ((playagain != 'Y') && (playagain != 'N') && (playagain != '#'));
+} while (playagain == 'Y');
+	system("pause");
+	menu();
+	return (0);
+}
+
+void rannum(int randomn[5])
+{
+	srand(time(NULL));
+	for (int i = 1; i<5; i++)
+	{
+		randomn[i] = rand() % 6 + 1;
+		//cout << randomn[i]; USE FOR TESTING
+	}
+	
+}
+
+void getData(int guess[5])
+{
+	cout << "Please enter your four numerical guesses (space speratated): ";
+	for (int i = 1; i<5; i++)
+	{
+		cin >> guess[i];
+		if (cin.fail())
+		{
+			cin.clear();
+			cin.ignore();
+			menu();
+		}
+	}
+}
+
+void check(int guess[5], int randomn[5], int & correctnum, int & correctloc) //check for correct # and location
+{
+	int cnum1, cnum2, cnum3, cnum4;
+	int cloc1, cloc2, cloc3, cloc4;
+
+	//for guess number 1
+	if (guess[1] == randomn[1]) //if correct location
+	{
+		cnum1 = 0;
+		cloc1 = 1;
+	}
+	else if (randomn[1] == guess[2] || randomn[1] == guess[3] || randomn[1] == guess[4]) //if correct number
+	{
+		cnum1 = 1;
+		cloc1 = 0;
+	}
+	else // if incorrect
+	{
+		cnum1 = 0;
+		cloc1 = 0;
+	}
+	//for guess number 2
+	if (randomn[2] == guess[2]) //if correct location
+	{
+		cnum2 = 0;
+		cloc2 = 1;
+	}
+	else if (randomn[2] == guess[1] || randomn[2] == guess[3] || randomn[2] == guess[4]) //if correct number
+	{
+		cnum2 = 1;
+		cloc2 = 0;
+	}
+	else// if incorrect
+	{
+		cnum2 = 0;
+		cloc2 = 0;
+	}
+
+	if (randomn[3] == guess[3]) //if correct location
+	{
+		cnum3 = 0;
+		cloc3 = 1;
+	}
+	else if (randomn[3] == guess[1] || randomn[3] == guess[2] || randomn[3] == guess[4]) //if correct number
+	{
+		cnum3 = 1;
+		cloc3 = 0;
+	}
+	else
+	{
+		cnum3 = 0;
+		cloc3 = 0;
+	}
+
+	if (randomn[4] == guess[4])
+	{
+		cnum4 = 0;
+		cloc4 = 1;
+	}
+	else if (randomn[4] == guess[1] || randomn[4] == guess[2] || randomn[4] == guess[3])
+		cnum4 = 1;
+		cloc4 = 0;
+	}
+	else
+	{
+		cnum4 = 0;
+		cloc4 = 0;
+	}
+	correctnum = cnum1 + cnum2 + cnum3 + cnum4;
+	correctloc = cloc1 + cloc2 + cloc3 + cloc4;
+}
+
+int rockpaperscissors()
+{
+	char rps = 'A' || 'B' || 'C' || '#';
+	char playagain = 'Y' || 'N' || '#';
+	srand(time(NULL));
+	int computer;
+
+	cout << endl << endl << endl << "Rock Paper Scissors" << endl << endl <<
+		"Choose either Rock, Paper, or Scissors." << endl <<
+		"Rock beats Scissors, Paper beats Rock, and Scissors beats Paper." << endl <<
+		"You will be playing against the Computer." << endl <<
+		"The first one to win 10 rounds wins" << endl << endl;
+	do{
+		int playerscore = 0;
+		int compscore = 0;
+	do {
+		do {
+
+			cout << "Rock...Paper...Scissors...Shoot!" << endl
+				<< "A. Rock" << endl
+				<< "B. Paper" << endl
+				<< "C. Scissors" << endl
+				<< "Please choose an option: ";
+			cin >> rps;
+			cout << endl;
+		} while ((rps != 'B') && (rps != 'A') && (rps != 'C') && (rps != '#'));
+		computer = (rand() % 3);
+		if (rps == 'A')
+		{
+			if (computer == 0)
+			{
+				cout << "The Computer has played ROCK" << endl;
+				cout << "It's a tie!";
+			}
+			else if (computer == 1)
+			{
+				cout << "The Computer has played PAPER" << endl;
+				cout << "PAPER beats ROCK! The Computer wins this round";
+				compscore++;
+			}
+			else if (computer == 2)
+			{
+				cout << "The Computer has played SCISSORS" << endl;
+				cout << "ROCK beats SCISSORS! You win this round";
+				playerscore++;
+			}
+		}
+
+		else if (rps == 'B')
+		{
+			if (computer == 1)
+			{
+				cout << "The Computer has played PAPER" << endl;
+				cout << "It's a tie!";
+			}
+			else if (computer == 0)
+			{
+				cout << "The Computer has played ROCK" << endl;
+				cout << "PAPER beats ROCK! You win this round";
+				playerscore++;
+			}
+			else if (computer == 2)
+			{
+				cout << "The Computer has played SCISSORS" << endl;
+				cout << "SCISSORS beat PAPER! The Computer wins this round";
+				compscore++;
+			}
+		}
+
+		else if (rps == 'C')
+		{
+			if (computer == 2)
+			{
+				cout << "The Computer has played SCISSORS" << endl;
+				cout << "It's a tie!";
+			}
+			else if (computer == 1)
+			{
+				cout << "The Computer has played PAPER" << endl;
+				cout << "SCISSORS beat PAPER! You win this round";
+				playerscore++;
+			}
+			else if (computer == 0)
+			{
+				cout << "The Computer has played ROCK" << endl;
+				cout << "ROCK beats SCISSORS! The Computer wins this round";
+				compscore++;
+			}
+		}
+		else if (rps == '#')
+		{
+			menu();
+		}
+		cout << endl << "You have won " << playerscore << " rounds" << endl;
+		cout << "The Computer has won " << compscore << " rounds" << endl << endl;
+	} while ((playerscore != 10) && (compscore != 10));
+	if (playerscore == 10)
+	{
+		cout << "Congratulations, You Win!" << endl;
+	}
+	else if (compscore == 10)
+	{
+		cout << "The Computer Wins" << endl;
+	}
+	else if (compscore == 10 && playerscore == 10)
+	{
+		cout << "You have Tied" << endl;
+	}
+	cout << endl;
+	do{
+		cout << endl << "Would you like to play again? (Y/N) ";
+		cin >> playagain;
+	} while ((playagain != 'Y') && (playagain != 'N') && (playagain != '#'));
+
+}while (playagain == 'Y');
+system("pause");
+menu();
+return (0);
+}
+
+int star()
+{
+	char playagain = 'Y' || 'N' || '#';
+	int rownum;
+	int row = 0, col = 0, space = 0;
+	cout << endl << endl << endl << "Star Patterns" << endl << endl <<
+		"How To Play: Enter a number of rows, and the program will create various patterns with a base of that many rows" << endl << endl;
+	do{	
+			cout << "How many rows do you want? ";
+			cin >> rownum;
+			
+		if (cin.fail())
+			{
+				cin.clear();
+				cin.ignore();
+				menu();
+			}
+
+	pattern1(rownum, row, col);
+	pattern2(rownum, row, col);
+	pattern3(rownum, row, col, space);
+	pattern4(rownum, row, col, space);
+	do{
+		cout << endl << "Would you like to play again? (Y/N) ";
+		cin >> playagain;
+	} while ((playagain != 'Y') && (playagain != 'N') && (playagain != '#'));
+	} while (playagain == 'Y');
+	system("pause");
+	menu();
+	return (0);
+}
+
+void pattern1(int rownum, int row, int col)
+{
+	cout << endl << "Pattern 1:" << endl;
+	for (row = rownum; row >= 0; row--)
+	{
+		for (col = row; col >= 1; col--)
+			cout << "*";
+		cout << endl;
+	}
+}
+
+void pattern2(int rownum, int row, int col)
+{
+	cout << endl << "Pattern 2:" << endl;
+	for (row = rownum; row >= 1; row--)
+	{
+		for (col = row; col >= 2; col--)
+			cout << " ";
+		for (col = rownum - row; col >= 0; col--)
+			cout << "*";
+		cout << endl;
+	}
+}
+
+void pattern3(int rownum, int row, int col, int space)
+{
+	cout << endl << "Pattern 3:" << endl;
+
+	for (row = 1; row <= rownum; ++row)
+	{
+		for (space = 1; space <= rownum - row; ++space)
+		{
+			cout << " ";
+		} while (col != 2 * row - 1)
+		{
+			cout << "*"; ++col;
+		} col = 0;
+		cout << "\n";
+	}
+
+}
+
+void pattern4(int rownum, int row, int col, int space)
+{
+	{
+		cout << endl << "Pattern 4:" << endl;
+
+		for (int row = 0; row < rownum; row++)
+		{
+			for (int col = 0; col < rownum; col++)
+			{
+				if (row == 0)
+				{
+					cout << "*";
+				}
+				else if (row == rownum - 1)
+				{
+					cout << "*";
+				}
+				else if (col == 0)
+				{
+					cout << "*";
+				}
+				else if (col == row)
+				{
+					cout << "*";
+				}
+				else if (col == rownum - 1)
+				{
+					cout << "*";
+				}
+				else if (col + row + 1 == rownum)
+				{
+					cout << "*";
+				}
+				else
+				{
+					cout << "-";
+				}
+			}
+			cout << endl;
+		}
+	}
+}
+
+int main()
+{
+	cout << "Crissy Leach" << endl << "128 03" << endl << endl <<
+		"  ********          ****        **         **  *********   *******" << endl <<
+		" *        *        *    *       * *       * *  *          *       " << endl <<
+		"*                 *      *      *  *     *  *  *          *       " << endl <<
+		"*     *****      **********     *   *   *   *  *****       *******" << endl <<
+		"*          *    *          *    *    * *    *  *                  *" << endl <<
+		" *        *    *            *   *     *     *  *                  *" << endl <<
+		"  ********    *              *  *     *     *  *********   *******" << endl << endl;
+	
+	menu();
+	
+	return 0;
+}
+
